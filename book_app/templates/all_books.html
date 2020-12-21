@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All The Books</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'all_books.css' %}">
+</head>
+<body>
+    <div id="container">
+        <div id="welcome">
+            <h1>Welcome, {{ user.first_name }}!</h1>
+            <a style="margin: .25em 3em 0 0;" href="/logout">Log Out</a>
+        </div>
+        <div id="main">
+            <div id="add_book">
+                <h2>Add a Favorite Book</h2>
+                <form action="/create_book" method="POST">
+                    {% csrf_token %}
+                    <div class="line">
+                        <label for="">Title</label>
+                        <input type="text" name="title">
+                    </div>
+                    <div class="line">
+                        <label for="">Author:</label>
+                        <input type="text" name="author">
+                    </div>
+                    <div class="line">
+                        <label for="">Description:</label>
+                        <textarea name="desc" id="" cols="30" rows="3" placeholder="Write a brief synopsis of the book"></textarea>
+                    </div>
+                    <button type="submit">Add</button>
+                    <div id="error_messages">
+                        {% if messages %}
+                        <ul>
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+            <div id="book_list">
+                <h2>All Books</h2>
+                {% for book in books %}
+                <div id="book_info_block">
+                    <a href="/books/{{book.id}}">{{book.title}}</a>
+                    <p>Author: {{book.author}}</p>
+                    <p>(added by <a href="/user/{{book.uploaded_by.id}}">{{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}})</p></a>
+                    {% if user in book.favorited_by.all %}
+                        <p style="font: italic;">this book is a favorite</p>
+                    {% endif %}
+                    {% if user not in book.favorited_by.all %}
+                        <a style="color: red;" href="/favorite/{{book.id}}">Favorite</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
